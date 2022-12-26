@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <algorithm>
+#include <sstream>
 #include "conio.h"
 
 using namespace std;
@@ -16,6 +17,17 @@ using namespace std;
 
 string prompt = "$P>";
 bool running = true;
+
+int tcol = 10;
+int bcol = 0;
+
+int hexCharToInt(char input){
+    stringstream ss;
+    ss << input;
+    int out;
+    ss >> hex >> out;
+    return out;
+}
 
 string toLower(string input){
     /**
@@ -154,17 +166,30 @@ vector<string> splitStr(string input, char delim){
 
 int main(int argc, char *argv[]){
     //cout << argv[1] << '\n';
+    textcolor(tcol + 1);
+    textbackground(bcol);
     cout << "LX-Batch by JakubKwantowy\n\n";
 
     string userinp;
     vector<string> split_userinp = {};
 
     while(running){
-        cout << prompt;
+        textcolor(tcol - 1);
+        cout << getPrompt(prompt);
+        textcolor(tcol);
         getline(cin, userinp);
         split_userinp = splitStr(userinp, ' ');
 
-        if(!toLower(split_userinp[0]).compare("exit")) running = false;
+        if(userinp[0] == '.') system(userinp.c_str());
+        else if(!toLower(split_userinp[0]).compare("exit")) running = false;
+        else if(!toLower(split_userinp[0]).compare("cls")) clrscr();
+        else if(!toLower(split_userinp[0]).compare("color")){
+            tcol = hexCharToInt(split_userinp[1][1]);
+            bcol = hexCharToInt(split_userinp[1][0]);
+            textbackground(bcol);
+            textcolor(tcol);
+        }
+        else cout << "Incorrect Command: " << userinp << '\n';
     }
 
     cout << '\n';
