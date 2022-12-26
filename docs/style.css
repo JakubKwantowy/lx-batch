@@ -1,0 +1,21 @@
+body{
+    background: linear-gradient(#0000FF,#000080 25%, #000080 75%, #000000);
+    font-family: monospace;
+    font-size: 32px;
+    color: #fff;
+    text-align: center;
+}
+
+html, body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#container{
+    height: fit-content;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
