@@ -164,6 +164,27 @@ vector<string> splitStr(string input, char delim){
     return out;
 }
 
+string joinStr(vector<string> input, char delim, int skip){
+    /**
+     * Opposite of splitStr (joins a string instead of splitting)
+     * 
+     * @param skip Sets value to start at (0 on default)
+    */
+
+    string out = "";
+
+    for(int i=skip;i<input.size();i++){
+        out += input[i];
+        if(i < input.size() - 1) out += delim;
+    }
+
+    return out;
+}
+
+string joinStr(vector<string> input, char delim){
+    return joinStr(input, delim, 0);
+}
+
 int main(int argc, char *argv[]){
     //cout << argv[1] << '\n';
     textcolor(tcol + 1);
@@ -188,6 +209,13 @@ int main(int argc, char *argv[]){
             bcol = hexCharToInt(split_userinp[1][0]);
             textbackground(bcol);
             textcolor(tcol);
+        }else if(!toLower(split_userinp[0]).compare("echo")){
+            int skip = 1;
+            if(split_userinp.size() > 1) {
+                if(!split_userinp[1].compare("/n")) skip++;
+                if(split_userinp.size() > 2 || skip < 2) cout << joinStr(split_userinp, ' ', skip);
+            }
+            if(skip < 2) cout << '\n';
         }
         else cout << "Incorrect Command: " << userinp << '\n';
     }
