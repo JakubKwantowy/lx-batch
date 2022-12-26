@@ -4,6 +4,7 @@
 #include <string>
 #include <unistd.h>
 #include <sys/utsname.h>
+#include <algorithm>
 #include "conio.h"
 
 using namespace std;
@@ -15,6 +16,14 @@ using namespace std;
 
 string prompt = "$P>";
 bool running = true;
+
+string toLower(string input){
+    /**
+     * Converts inputed string to Lowercase (Duh!) 
+    */
+    transform(input.begin(), input.end(), input.begin(), ::tolower);
+    return input;
+}
 
 string getPrompt(string input){
     /**
@@ -145,7 +154,7 @@ vector<string> splitStr(string input, char delim){
 
 int main(int argc, char *argv[]){
     //cout << argv[1] << '\n';
-    cout << "LX-Batch by JakubKwantowy\n";
+    cout << "LX-Batch by JakubKwantowy\n\n";
 
     string userinp;
     vector<string> split_userinp = {};
@@ -155,9 +164,7 @@ int main(int argc, char *argv[]){
         getline(cin, userinp);
         split_userinp = splitStr(userinp, ' ');
 
-        cout << split_userinp[0];
-
-        running = false;
+        if(!toLower(split_userinp[0]).compare("exit")) running = false;
     }
 
     cout << '\n';
