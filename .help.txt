@@ -1,3 +1,4 @@
 EXIT - Exits LX-Batch
 CLS - Clears the Screen
 COLOR (BG) (FG) - Changes Colors (BG: Background, FG: Foreground)
+ECHO [/n] TEXT - Displays text (/n: Doesn't print newline with this flag, TEXT: Text to print)
