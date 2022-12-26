@@ -1,0 +1,3 @@
+EXIT - Exits LX-Batch
+CLS - Clears the Screen
+COLOR (BG) (FG) - Changes Colors (BG: Background, FG: Foreground)
