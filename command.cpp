@@ -17,8 +17,9 @@ using namespace std;
 
 string prompt = "$P>";
 bool running = true;
+string systemname = "LX-Batch by JakubKwantowy Beta";
 
-int tcol = 10;
+int tcol = 7;
 int bcol = 0;
 
 int hexCharToInt(char input){
@@ -164,32 +165,34 @@ vector<string> splitStr(string input, char delim){
     return out;
 }
 
-string joinStr(vector<string> input, char delim, int skip){
+string glueStr(vector<string> input, char delim, int offset){
     /**
-     * Opposite of splitStr (joins a string instead of splitting)
+     * Glues a String with a Delimeter 
+     *
+     * @param input String to be Glued with the Delimeter
+     * @param delim The Delimeter the string is going to be glued with
+     * @param offset The element to start glueing from, default is 0
      * 
-     * @param skip Sets value to start at (0 on default)
+     * @returns A string that contains the Vector glued up by the Delimeter
     */
 
     string out = "";
-
-    for(int i=skip;i<input.size();i++){
+    for(int i=offset;i<input.size();i++) {
         out += input[i];
-        if(i < input.size() - 1) out += delim;
-    }
-
+        if(i<(input.size()-1)) out += delim;
+    } 
     return out;
 }
 
-string joinStr(vector<string> input, char delim){
-    return joinStr(input, delim, 0);
+string glueStr(vector<string> input, char delim){
+    return glueStr(input, delim, 0);
 }
 
 int main(int argc, char *argv[]){
     //cout << argv[1] << '\n';
-    textcolor(tcol + 1);
+    textcolor(9);
     textbackground(bcol);
-    cout << "LX-Batch by JakubKwantowy\n\n";
+    cout << systemname << '\n' << '\n';
 
     string userinp;
     vector<string> split_userinp = {};
@@ -213,11 +216,16 @@ int main(int argc, char *argv[]){
             int skip = 1;
             if(split_userinp.size() > 1) {
                 if(!split_userinp[1].compare("/n")) skip++;
-                if(split_userinp.size() > 2 || skip < 2) cout << joinStr(split_userinp, ' ', skip);
+                if(split_userinp.size() > 2 || skip < 2) cout << glueStr(split_userinp, ' ', skip);
             }
             if(skip < 2) cout << '\n';
-        }
-        else cout << "Incorrect Command: " << userinp << '\n';
+        }else if(!toLower(split_userinp[0]).compare("ver")){
+            cout << systemname << '\n';
+        }else if(!toLower(split_userinp[0]).compare("cd")){
+            chdir(glueStr(split_userinp, ' ', 1).c_str());
+        }else if(!toLower(split_userinp[0]).compare("dir")){
+            
+        }else cout << "Incorrect Command: " << userinp << '\n';
     }
 
     cout << '\n';
