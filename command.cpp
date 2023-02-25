@@ -6,6 +6,7 @@
 #include <sys/utsname.h>
 #include <algorithm>
 #include <sstream>
+#include <dirent.h>
 #include "conio.h"
 
 using namespace std;
@@ -224,7 +225,7 @@ int main(int argc, char *argv[]){
         }else if(!toLower(split_userinp[0]).compare("cd")){
             chdir(glueStr(split_userinp, ' ', 1).c_str());
         }else if(!toLower(split_userinp[0]).compare("dir")){
-            
+
         }else cout << "Incorrect Command: " << userinp << '\n';
     }
 
