@@ -209,8 +209,10 @@ int main(int argc, char *argv[]){
         else if(!toLower(split_userinp[0]).compare("exit")) running = false;
         else if(!toLower(split_userinp[0]).compare("cls")) clrscr();
         else if(!toLower(split_userinp[0]).compare("color")){
-            tcol = hexCharToInt(split_userinp[1][1]);
-            bcol = hexCharToInt(split_userinp[1][0]);
+            if(split_userinp[1].length() > 1) {
+                tcol = hexCharToInt(split_userinp[1][1]);
+                bcol = hexCharToInt(split_userinp[1][0]);
+            } else tcol = hexCharToInt(split_userinp[1][0]);
             textbackground(bcol);
             textcolor(tcol);
         }else if(!toLower(split_userinp[0]).compare("echo")){
