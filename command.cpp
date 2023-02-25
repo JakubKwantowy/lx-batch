@@ -6,6 +6,7 @@
 #include <sys/utsname.h>
 #include <algorithm>
 #include <sstream>
+#include <dirent.h>
 #include "conio.h"
 
 using namespace std;
@@ -17,8 +18,9 @@ using namespace std;
 
 string prompt = "$P>";
 bool running = true;
+string systemname = "LX-Batch by JakubKwantowy Beta";
 
-int tcol = 10;
+int tcol = 7;
 int bcol = 0;
 
 int hexCharToInt(char input){
@@ -100,9 +102,7 @@ string getPrompt(string input){
                     out += to_string(currtm->tm_hour) + ":" + to_string(currtm->tm_min) + ":" + to_string(currtm->tm_sec);
                 break;
                 case 'V':
-                    struct utsname *osver;
-                    uname(osver);
-                    out += string(osver->sysname) + " " + string(osver->release);
+                    out += systemname;
                 break;
                 case '_':
                     out += '\n';
@@ -164,11 +164,35 @@ vector<string> splitStr(string input, char delim){
     return out;
 }
 
+string glueStr(vector<string> input, char delim, int offset){
+    /**
+     * Glues a String with a Delimeter 
+     *
+     * @param input String to be Glued with the Delimeter
+     * @param delim The Delimeter the string is going to be glued with
+     * @param offset The element to start glueing from, default is 0
+     * 
+     * @returns A string that contains the Vector glued up by the Delimeter
+    */
+
+    string out = "";
+    for(int i=offset;i<input.size();i++) {
+        out += input[i];
+        if(i<(input.size()-1)) out += delim;
+    } 
+    return out;
+}
+
+string glueStr(vector<string> input, char delim){
+    return glueStr(input, delim, 0);
+}
+
 int main(int argc, char *argv[]){
     //cout << argv[1] << '\n';
-    textcolor(tcol + 1);
+
+    textcolor(9);
     textbackground(bcol);
-    cout << "LX-Batch by JakubKwantowy\n\n";
+    cout << systemname << '\n' << '\n';
 
     string userinp;
     vector<string> split_userinp = {};
@@ -184,10 +208,18 @@ int main(int argc, char *argv[]){
         else if(!toLower(split_userinp[0]).compare("exit")) running = false;
         else if(!toLower(split_userinp[0]).compare("cls")) clrscr();
         else if(!toLower(split_userinp[0]).compare("color")){
-            tcol = hexCharToInt(split_userinp[1][1]);
-            bcol = hexCharToInt(split_userinp[1][0]);
+            if(split_userinp[1].length() > 1) {
+                tcol = hexCharToInt(split_userinp[1][1]);
+                bcol = hexCharToInt(split_userinp[1][0]);
+            } else tcol = hexCharToInt(split_userinp[1][0]);
             textbackground(bcol);
             textcolor(tcol);
+        }else if(!toLower(split_userinp[0]).compare("ver")){
+            cout << systemname << '\n';
+        }else if(!toLower(split_userinp[0]).compare("cd")){
+            chdir(glueStr(split_userinp, ' ', 1).c_str());
+        }else if(!toLower(split_userinp[0]).compare("dir")){
+            
         }
         else cout << "Incorrect Command: " << userinp << '\n';
     }
