@@ -9,29 +9,33 @@
 #include <dirent.h>
 #include "conio.h"
 
-using namespace std;
+//using namespace std;
 
 /**
  * @author JakubKwantowy
  * @name LX-Batch
 */
 
-string prompt = "$P>";
+std::string prompt = "$P>";
 bool running = true;
-string systemname = "LX-Batch by JakubKwantowy Beta";
+std::string systemname = "LX-Batch by JakubKwantowy Beta";
 
-int tcol = 7;
+std::vector<std::vector<std::string>> env = {
+    {"%lxbatch%", "beta"}
+};
+
+int tcol = 10;
 int bcol = 0;
 
 int hexCharToInt(char input){
-    stringstream ss;
+    std::stringstream ss;
     ss << input;
     int out;
-    ss >> hex >> out;
+    ss >> std::hex >> out;
     return out;
 }
 
-string toLower(string input){
+std::string toLower(std::string input){
     /**
      * Converts inputed string to Lowercase (Duh!) 
     */
@@ -39,12 +43,12 @@ string toLower(string input){
     return input;
 }
 
-string getPrompt(string input){
+std::string getPrompt(std::string input){
     /**
      * Gets current prompt from string (one input, one output. Everything should be clear.)
     */
 
-    string out = "";
+    std::string out = "";
     bool escape = false;
     time_t *currtime_t;
     struct tm *currtm;
@@ -68,7 +72,7 @@ string getPrompt(string input){
                 case 'D':
                     time(currtime_t);
                     currtm = localtime(currtime_t);
-                    out += to_string(currtm->tm_mon + 1) + "/" + to_string(currtm->tm_mday) + "/" + to_string(currtm->tm_year + 1900);
+                    out += std::to_string(currtm->tm_mon + 1) + "/" + std::to_string(currtm->tm_mday) + "/" + std::to_string(currtm->tm_year + 1900);
                 break;
                 case 'E':
                     out += 0x1b;
@@ -99,12 +103,12 @@ string getPrompt(string input){
                 case 'T':
                     time(currtime_t);
                     currtm = localtime(currtime_t);
-                    out += to_string(currtm->tm_hour) + ":" + to_string(currtm->tm_min) + ":" + to_string(currtm->tm_sec);
+                    out += std::to_string(currtm->tm_hour) + ":" + std::to_string(currtm->tm_min) + ":" + std::to_string(currtm->tm_sec);
                 break;
                 case 'V':
                     struct utsname *osver;
                     uname(osver);
-                    out += string(osver->sysname) + " " + string(osver->release);
+                    out += std::string(osver->sysname) + " " + std::string(osver->release);
                 break;
                 case '_':
                     out += '\n';
@@ -141,9 +145,9 @@ string getPrompt(string input){
    */
 }
 
-vector<string> splitStr(string input, char delim){
-    string temp = "";
-    vector<string> out = {};
+std::vector<std::string> splitStr(std::string input, char delim){
+    std::string temp = "";
+    std::vector<std::string> out = {};
 
     /**
      * Splits a String with a Delimeter 
@@ -166,7 +170,7 @@ vector<string> splitStr(string input, char delim){
     return out;
 }
 
-string glueStr(vector<string> input, char delim, int offset){
+std::string glueStr(std::vector<std::string> input, char delim, int offset){
     /**
      * Glues a String with a Delimeter 
      *
@@ -177,7 +181,7 @@ string glueStr(vector<string> input, char delim, int offset){
      * @returns A string that contains the Vector glued up by the Delimeter
     */
 
-    string out = "";
+    std::string out = "";
     for(int i=offset;i<input.size();i++) {
         out += input[i];
         if(i<(input.size()-1)) out += delim;
@@ -185,24 +189,49 @@ string glueStr(vector<string> input, char delim, int offset){
     return out;
 }
 
-string glueStr(vector<string> input, char delim){
+std::string glueStr(std::vector<std::string> input, char delim){
     return glueStr(input, delim, 0);
+}
+
+std::string findElement(std::vector<std::vector<std::string>> dict, std::string toFind){
+    for(std::vector<std::string> pair : dict){
+        if(pair[0] == toFind) return pair[1];
+    }
+    return NULL;
+}
+
+int elementId(std::vector<std::vector<std::string>> dict, std::string toFind){
+    for(int i=0;i<dict.size();i++){
+        if(dict[i][0] == toFind) return i;
+    }
+    return NULL;
+}
+
+bool keyExists(std::vector<std::vector<std::string>> dict, std::string key){
+    for(std::vector<std::string> pair : dict){
+        if(pair[0] == key) return true;
+    }
+    return false;
 }
 
 int main(int argc, char *argv[]){
     //cout << argv[1] << '\n';
+    env.push_back({"%userprofile%", std::string(getenv("HOME"))});
+
     textcolor(9);
     textbackground(bcol);
-    cout << systemname << '\n' << '\n';
+    std::cout << systemname << '\n' << '\n';
 
-    string userinp;
-    vector<string> split_userinp = {};
+    std::string userinp;
+    std::vector<std::string> split_userinp = {};
+
+    //std::cout << findElement(env, "%userprofile%");
 
     while(running){
         textcolor(tcol - 1);
-        cout << getPrompt(prompt);
+        std::cout << getPrompt(prompt);
         textcolor(tcol);
-        getline(cin, userinp);
+        getline(std::cin, userinp);
         split_userinp = splitStr(userinp, ' ');
 
         if(userinp[0] == '.') system(userinp.c_str());
@@ -218,19 +247,81 @@ int main(int argc, char *argv[]){
         }else if(!toLower(split_userinp[0]).compare("echo")){
             int skip = 1;
             if(split_userinp.size() > 1) {
-                if(!split_userinp[1].compare("/n")) skip++;
-                if(split_userinp.size() > 2 || skip < 2) cout << glueStr(split_userinp, ' ', skip);
+                if(!split_userinp[1].compare("-n")) skip++;
+                if(split_userinp.size() > 2 || skip < 2) std::cout << glueStr(split_userinp, ' ', skip);
             }
-            if(skip < 2) cout << '\n';
+            if(skip < 2) std::cout << '\n';
         }else if(!toLower(split_userinp[0]).compare("ver")){
-            cout << systemname << '\n';
+            std::cout << systemname << '\n';
         }else if(!toLower(split_userinp[0]).compare("cd")){
             chdir(glueStr(split_userinp, ' ', 1).c_str());
         }else if(!toLower(split_userinp[0]).compare("dir")){
-
-        }else cout << "Incorrect Command: " << userinp << '\n';
+            DIR *dir; struct dirent *diread; // Compatibility 100
+            std::vector<struct dirent *> files;
+            int filec = 0, dirc = 0;
+            std::string path = get_current_dir_name();
+            if(split_userinp.size() > 1) {
+                if(split_userinp[1][0] == '/') path = glueStr(split_userinp, ' ', 1);
+                else path += '/' + glueStr(split_userinp, ' ', 1);
+            }
+            if ((dir = opendir(path.c_str())) != nullptr) {
+                while ((diread = readdir(dir)) != nullptr) {
+                    files.push_back(diread);
+                }
+                closedir (dir);
+                std::cout << " Directory of " << path << ".\n\n";
+                for(auto file : files){
+                    if(file->d_name[0] == '.') continue;
+                    if(file->d_type==DT_DIR){
+                        std::cout << "<DIR> ";
+                        dirc++;
+                    }
+                    else {
+                        std::cout << "      ";
+                        filec++;
+                    }
+                    std::cout << file->d_name;
+                    std::cout << '\n';
+                }
+                std::cout << "    " << filec << " File(s)\n";
+                std::cout << "    " << dirc << " Dir(s)\n";
+            }
+        }else if(!toLower(split_userinp[0]).compare("set")){
+            if(split_userinp.size() < 2){
+                for(int i=0;i<env.size();i++){
+                    textcolor(tcol - 1);
+                    std::cout << env[i][0]; 
+                    textcolor(tcol);
+                    std::cout << '=' << env[i][1] << '\n';
+                }
+                continue;
+            }
+            if(split_userinp[1] == "-p"){
+                std::string envinp;
+                std::vector<std::string> parts = splitStr(glueStr(split_userinp, ' ', 2), '=');
+                textcolor(tcol - 1);
+                std::cout << glueStr(parts, '=', 1);
+                textcolor(tcol);
+                getline(std::cin, envinp);
+                int e;
+                if((e = elementId(env, "%"+parts[0]+"%")) != NULL) env[e][1] = envinp;
+                else env.push_back({"%"+parts[0]+"%", envinp});
+                continue;
+            }
+            std::vector<std::string> parts = splitStr(glueStr(split_userinp, ' ', 1), '=');
+            if(parts.size() > 1){
+                int e;
+                if((e = elementId(env, "%"+parts[0]+"%")) != NULL) env[e][1] = glueStr(parts, '=', 1);
+                else env.push_back({"%"+parts[0]+"%", glueStr(parts, '=', 1)});
+            }else{
+                textcolor(tcol - 1);
+                std::cout << split_userinp[1]; 
+                textcolor(tcol);
+                std::cout << '=' << findElement(env, split_userinp[1]) << '\n';
+            }
+        }else std::cout << "Incorrect Command: " << userinp << '\n';
     }
 
-    cout << '\n';
+    std::cout << '\n';
     return 0;
 }
